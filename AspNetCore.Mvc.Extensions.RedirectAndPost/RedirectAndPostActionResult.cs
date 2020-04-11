@@ -20,16 +20,15 @@ namespace AspNetCore.Mvc.Extensions.RedirectAndPost
             this.data = data;
         }
 
-        public async override Task ExecuteResultAsync(ActionContext context)
+        public override void ExecuteResult(ActionContext context)
         {
             var html = GenerateHtmlPostForm(url, data);
             context.HttpContext.Response.ContentType = "text/html";
-            await context.HttpContext.Response.WriteAsync(html);
+            context.HttpContext.Response.WriteAsync(html);
         }
 
         private string GenerateHtmlPostForm(Uri url, TData data)
         {
-            string result = String.Empty;
             var id = StringHelpers.RandomString(12);
 
             var pairs = SerializeAsHtmlFormInputKeyPairs(data);
@@ -42,11 +41,10 @@ namespace AspNetCore.Mvc.Extensions.RedirectAndPost
             }
             builder.Append("</form>")
                 .Append("<script language=\"javascript\">")
-                .Append($"var f{id} = document.{id};")
-                .Append($"f{id}.submit();")
+                .Append($"document.getElementById(\"{id}\").submit();")
                 .Append("</script>");
 
-            return result;
+            return builder.ToString();
         }
 
         private List<KeyValuePair<string, object>> SerializeAsHtmlFormInputKeyPairs(TData data)
@@ -81,9 +79,11 @@ namespace AspNetCore.Mvc.Extensions.RedirectAndPost
                     break;
 
                 case JTokenType.Array:
+                    var index = 0;
                     foreach (JToken value in token.Children())
                     {
-                        FalttenAndCreateHtmlFormInputsKeyPairs(pairs, value, StringHelpers.Join(prefix, String.Empty));
+                        FalttenAndCreateHtmlFormInputsKeyPairs(pairs, value, StringHelpers.Join(prefix, index.ToString()));
+                        index++;
                     }
                     break;
 

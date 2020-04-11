@@ -338,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/AspNetCore.Mvc.Extensions.RedirectAndPost.Tests.Source
+/AspNetCore.Mvc.Extensions.RedirectAndPost.Tests.Destination
+/AspNetCore.Mvc.Extensions.RedirectAndPost.Tests.Common
